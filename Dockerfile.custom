@@ -1,0 +1,82 @@
+# Gitea 插件系统 Docker 镜像
+# 基于官方 Gitea 构建，添加插件系统支持
+
+# 构建阶段
+FROM golang:1.21-alpine AS builder
+
+# 安装构建依赖
+RUN apk add --no-cache \
+    git \
+    make \
+    nodejs \
+    npm \
+    build-base \
+    sqlite-dev
+
+# 设置工作目录
+WORKDIR /go/src/code.gitea.io/gitea
+
+# 复制源码
+COPY . .
+
+# 编译 Gitea（包含插件系统）
+RUN TAGS="bindata sqlite sqlite_unlock_notify" make build
+
+# 编译授权管理插件
+WORKDIR /go/src/license-manager-plugin
+COPY ../license-manager-plugin .
+RUN go build -buildmode=plugin -o plugin.so .
+
+# 运行阶段
+FROM alpine:3.18
+
+# 安装运行时依赖
+RUN apk add --no-cache \
+    bash \
+    ca-certificates \
+    curl \
+    gettext \
+    git \
+    linux-pam \
+    openssh \
+    s6 \
+    sqlite \
+    su-exec \
+    gnupg \
+    tzdata
+
+# 创建 git 用户
+RUN addgroup -S -g 1000 git && \
+    adduser -S -H -D -h /data/git -s /bin/bash -u 1000 -G git git && \
+    echo "git:*" | chpasswd -e
+
+# 设置环境变量
+ENV USER=git
+ENV GITEA_CUSTOM=/data/gitea
+
+# 创建必要的目录
+RUN mkdir -p /app/gitea /data/gitea /data/git /data/gitea/plugins/installed
+
+# 从构建阶段复制文件
+COPY --from=builder /go/src/code.gitea.io/gitea/gitea /app/gitea/gitea
+COPY --from=builder /go/src/license-manager-plugin /data/gitea/plugins/installed/license-manager/
+
+# 设置权限
+RUN chown -R git:git /app/gitea /data
+
+# 暴露端口
+EXPOSE 3000 22
+
+# 设置工作目录
+WORKDIR /app/gitea
+
+# 切换到 git 用户
+USER git
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s \
+    CMD curl -f http://localhost:3000/api/healthz || exit 1
+
+# 启动命令
+ENTRYPOINT ["/app/gitea/gitea"]
+CMD ["web"]

@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Build artifacts
+gitea
+*.exe
+*.test
+*.out
+dist/
+build/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Data
+data/
+custom/conf/app.ini
+*.db
+*.sqlite
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Documentation (keep only essential)
+*.md
+!README.md
+!LICENSE
+
+# Test files
+*_test.go
+test/
+tests/

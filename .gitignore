@@ -1,0 +1,58 @@
+# Gitea build outputs
+gitea
+gitea.exe
+*.exe
+*.so
+*.dll
+*.dylib
+
+# Node modules
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+public/assets/
+
+# Custom data (runtime)
+custom/conf/app.ini
+custom/https/
+custom/indexers/
+custom/log/
+custom/queues/
+custom/sessions/
+data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Test files
+*.test
+coverage/
+
+# Plugin builds
+plugins/**/*.so
+!plugins/examples/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3

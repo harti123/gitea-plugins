@@ -1,0 +1,71 @@
+# GitHub Actions / Gitee Go 通用 CI/CD 配置
+# 自动构建 Docker 镜像
+
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  # 镜像仓库配置
+  REGISTRY: registry.cn-hangzhou.aliyuncs.com
+  NAMESPACE: harti
+  IMAGE_NAME: gitea-plugins
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v3
+
+    - name: 设置 QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: 设置 Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: 登录到容器镜像仓库
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: 提取元数据
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: 构建并推送 Docker 镜像
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./Dockerfile.custom
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: 输出镜像信息
+      run: |
+        echo "✅ Docker 镜像构建成功！"
+        echo "📦 镜像地址: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}"
+        echo "🏷️  标签: ${{ steps.meta.outputs.tags }}"

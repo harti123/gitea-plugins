@@ -1,0 +1,35 @@
+{{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin new license")}}
+	<div class="admin-setting-content">
+		<h4 class="ui top attached header">
+			{{ctx.Locale.Tr "admin.license.new"}}
+		</h4>
+		<div class="ui attached segment">
+			<form class="ui form" method="post" action="{{AppSubUrl}}/admin/license/new">
+				{{.CsrfTokenHtml}}
+				<div class="required field {{if .Err_MachineCode}}error{{end}}">
+					<label for="machine_code">{{ctx.Locale.Tr "admin.license.machine_code"}}</label>
+					<input id="machine_code" name="machine_code" value="{{.machine_code}}" required>
+					<p class="help">{{ctx.Locale.Tr "admin.license.machine_code_help"}}</p>
+				</div>
+				<div class="field">
+					<label for="machine_name">{{ctx.Locale.Tr "admin.license.machine_name"}}</label>
+					<input id="machine_name" name="machine_name" value="{{.machine_name}}">
+					<p class="help">{{ctx.Locale.Tr "admin.license.machine_name_help"}}</p>
+				</div>
+				<div class="field">
+					<label for="expiry_days">{{ctx.Locale.Tr "admin.license.expiry_days"}}</label>
+					<input id="expiry_days" name="expiry_days" type="number" value="{{.expiry_days}}" min="0">
+					<p class="help">{{ctx.Locale.Tr "admin.license.expiry_days_help"}}</p>
+				</div>
+				<div class="field">
+					<label for="remarks">{{ctx.Locale.Tr "admin.license.remarks"}}</label>
+					<textarea id="remarks" name="remarks" rows="3">{{.remarks}}</textarea>
+				</div>
+				<div class="field">
+					<button class="ui primary button">{{ctx.Locale.Tr "admin.license.create"}}</button>
+					<a class="ui button" href="{{AppSubUrl}}/admin/license">{{ctx.Locale.Tr "settings.cancel"}}</a>
+				</div>
+			</form>
+		</div>
+	</div>
+{{template "admin/layout_footer" .}}

@@ -1,0 +1,44 @@
+{
+  "id": "license-manager",
+  "name": "授权管理",
+  "version": "1.0.0",
+  "description": "设备授权管理插件，支持用户级别的设备授权和管理",
+  "author": "Kiro Team",
+  "homepage": "https://github.com/gitea/license-manager-plugin",
+  "license": "MIT",
+  "gitea_version": ">=1.20.0",
+  "dependencies": [],
+  "entry_point": "main.go",
+  "hooks": {
+    "routes": true,
+    "models": true,
+    "templates": true,
+    "api": true
+  },
+  "permissions": [
+    "database.read",
+    "database.write",
+    "api.create",
+    "ui.modify"
+  ],
+  "config_schema": {
+    "type": "object",
+    "properties": {
+      "max_devices_per_user": {
+        "type": "integer",
+        "default": 10,
+        "description": "每个用户最大设备数"
+      },
+      "default_expiry_days": {
+        "type": "integer",
+        "default": 365,
+        "description": "默认授权有效期（天）"
+      },
+      "allow_permanent_license": {
+        "type": "boolean",
+        "default": true,
+        "description": "是否允许永久授权"
+      }
+    }
+  }
+}

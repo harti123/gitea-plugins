@@ -1,0 +1,47 @@
+{{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin edit license")}}
+	<div class="admin-setting-content">
+		<h4 class="ui top attached header">
+			{{ctx.Locale.Tr "admin.license.edit"}}
+		</h4>
+		<div class="ui attached segment">
+			<form class="ui form" method="post" action="{{AppSubUrl}}/admin/license/{{.Device.ID}}/edit">
+				{{.CsrfTokenHtml}}
+				<div class="field">
+					<label>{{ctx.Locale.Tr "admin.license.device_id"}}</label>
+					<input value="{{.Device.DeviceID}}" readonly>
+				</div>
+				<div class="field">
+					<label>{{ctx.Locale.Tr "admin.license.machine_code"}}</label>
+					<input value="{{.Device.MachineCode}}" readonly>
+				</div>
+				<div class="field">
+					<label>{{ctx.Locale.Tr "admin.license.license_key"}}</label>
+					<input value="{{.Device.LicenseKey}}" readonly>
+				</div>
+				<div class="field">
+					<label for="machine_name">{{ctx.Locale.Tr "admin.license.machine_name"}}</label>
+					<input id="machine_name" name="machine_name" value="{{.Device.MachineName}}">
+				</div>
+				<div class="field">
+					<div class="ui checkbox">
+						<input id="is_enabled" name="is_enabled" type="checkbox" {{if .Device.IsEnabled}}checked{{end}}>
+						<label for="is_enabled">{{ctx.Locale.Tr "admin.license.is_enabled"}}</label>
+					</div>
+				</div>
+				<div class="field">
+					<label for="expiry_days">{{ctx.Locale.Tr "admin.license.expiry_days"}}</label>
+					<input id="expiry_days" name="expiry_days" type="number" min="0" placeholder="{{ctx.Locale.Tr "admin.license.leave_empty_no_change"}}">
+					<p class="help">{{ctx.Locale.Tr "admin.license.expiry_days_help"}}</p>
+				</div>
+				<div class="field">
+					<label for="remarks">{{ctx.Locale.Tr "admin.license.remarks"}}</label>
+					<textarea id="remarks" name="remarks" rows="3">{{.Device.Remarks}}</textarea>
+				</div>
+				<div class="field">
+					<button class="ui primary button">{{ctx.Locale.Tr "admin.license.update"}}</button>
+					<a class="ui button" href="{{AppSubUrl}}/admin/license">{{ctx.Locale.Tr "settings.cancel"}}</a>
+				</div>
+			</form>
+		</div>
+	</div>
+{{template "admin/layout_footer" .}}

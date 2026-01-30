@@ -1,0 +1,70 @@
+{{template "admin/layout_head" (dict "ctxData" . "pageClass" "admin plugins market")}}
+	<div class="admin-setting-content">
+		<h4 class="ui top attached header">
+			{{ctx.Locale.Tr "admin.plugins.market"}}
+			<div class="ui right">
+				<a class="ui button" href="{{AppSubUrl}}/admin/plugins">
+					{{svg "octicon-arrow-left"}} {{ctx.Locale.Tr "admin.plugins.back_to_list"}}
+				</a>
+			</div>
+		</h4>
+		<div class="ui attached segment">
+			{{if .AvailablePlugins}}
+				<div class="ui cards">
+					{{range .AvailablePlugins}}
+						<div class="card">
+							<div class="content">
+								<div class="header">{{.Name}}</div>
+								<div class="meta">
+									<span>v{{.Version}}</span>
+									{{if .Author}}
+										<span> · {{.Author}}</span>
+									{{end}}
+								</div>
+								<div class="description">
+									{{.Description}}
+								</div>
+							</div>
+							<div class="extra content">
+								<div class="ui two buttons">
+									{{if index $.InstalledMap .ID}}
+										<div class="ui disabled button">
+											{{svg "octicon-check"}} {{ctx.Locale.Tr "admin.plugins.installed"}}
+										</div>
+									{{else}}
+										<form method="post" action="{{AppSubUrl}}/admin/plugins/install" style="width: 100%;">
+											{{$.CsrfTokenHtml}}
+											<input type="hidden" name="plugin_id" value="{{.ID}}">
+											<input type="hidden" name="version" value="{{.Version}}">
+											<button class="ui primary button" type="submit" style="width: 100%;">
+												{{svg "octicon-download"}} {{ctx.Locale.Tr "admin.plugins.install"}}
+											</button>
+										</form>
+									{{end}}
+									{{if .Homepage}}
+										<a class="ui button" href="{{.Homepage}}" target="_blank">
+											{{svg "octicon-link-external"}} {{ctx.Locale.Tr "admin.plugins.homepage"}}
+										</a>
+									{{end}}
+								</div>
+							</div>
+							{{if .License}}
+								<div class="extra content">
+									<span class="right floated">
+										<i class="balance scale icon"></i>
+										{{.License}}
+									</span>
+								</div>
+							{{end}}
+						</div>
+					{{end}}
+				</div>
+			{{else}}
+				<div class="ui center aligned segment">
+					<p>{{ctx.Locale.Tr "admin.plugins.no_available_plugins"}}</p>
+					<p class="text grey">{{ctx.Locale.Tr "admin.plugins.check_marketplace_url"}}</p>
+				</div>
+			{{end}}
+		</div>
+	</div>
+{{template "admin/layout_footer" .}}

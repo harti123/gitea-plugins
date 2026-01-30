@@ -1,0 +1,101 @@
+{{template "user/settings/layout_head" (dict "ctxData" . "pageClass" "user settings license")}}
+	<div class="user-setting-content">
+		<h4 class="ui top attached header">
+			{{ctx.Locale.Tr "settings.license.title"}}
+			<div class="ui right">
+				<a class="ui primary button" href="{{AppSubUrl}}/user/settings/license/new">
+					{{svg "octicon-plus"}} {{ctx.Locale.Tr "settings.license.new"}}
+				</a>
+			</div>
+		</h4>
+		<div class="ui attached segment">
+			{{if .Devices}}
+				<div class="ui unstackable very relaxed divided list">
+					{{range .Devices}}
+						<div class="item">
+							<div class="content">
+								<div class="header">
+									<strong>{{.MachineName}}</strong>
+									{{if .IsEnabled}}
+										<span class="ui green label">{{ctx.Locale.Tr "settings.license.enabled"}}</span>
+									{{else}}
+										<span class="ui red label">{{ctx.Locale.Tr "settings.license.disabled"}}</span>
+									{{end}}
+									{{if not .ExpiryDate.IsZero}}
+										{{if .ExpiryDate.AsTime.Before now}}
+											<span class="ui red label">{{ctx.Locale.Tr "settings.license.expired"}}</span>
+										{{else}}
+											<span class="ui yellow label">{{ctx.Locale.Tr "settings.license.expires_at"}}: {{DateTime "short" .ExpiryDate}}</span>
+										{{end}}
+									{{else}}
+										<span class="ui blue label">{{ctx.Locale.Tr "settings.license.permanent"}}</span>
+									{{end}}
+								</div>
+								<div class="description">
+									<div class="ui grid">
+										<div class="eight wide column">
+											<div><strong>{{ctx.Locale.Tr "settings.license.device_id"}}:</strong> <code>{{.DeviceID}}</code></div>
+											<div><strong>{{ctx.Locale.Tr "settings.license.machine_code"}}:</strong> <code>{{.MachineCode}}</code></div>
+											<div><strong>{{ctx.Locale.Tr "settings.license.license_key"}}:</strong> <code>{{.LicenseKey}}</code></div>
+										</div>
+										<div class="eight wide column">
+											<div><strong>{{ctx.Locale.Tr "settings.license.created_at"}}:</strong> {{DateTime "short" .CreatedUnix}}</div>
+											{{if not .LastVerifiedAt.IsZero}}
+												<div><strong>{{ctx.Locale.Tr "settings.license.last_verified"}}:</strong> {{DateTime "short" .LastVerifiedAt}}</div>
+											{{end}}
+											{{if .Remarks}}
+												<div><strong>{{ctx.Locale.Tr "settings.license.remarks"}}:</strong> {{.Remarks}}</div>
+											{{end}}
+										</div>
+									</div>
+								</div>
+								<div class="extra">
+									<a class="ui button" href="{{AppSubUrl}}/user/settings/license/{{.ID}}/edit">
+										{{svg "octicon-pencil"}} {{ctx.Locale.Tr "settings.license.edit"}}
+									</a>
+									<form method="post" action="{{AppSubUrl}}/user/settings/license/{{.ID}}/toggle" style="display: inline;">
+										{{$.CsrfTokenHtml}}
+										<button class="ui button" type="submit">
+											{{if .IsEnabled}}
+												{{svg "octicon-x"}} {{ctx.Locale.Tr "settings.license.disable"}}
+											{{else}}
+												{{svg "octicon-check"}} {{ctx.Locale.Tr "settings.license.enable"}}
+											{{end}}
+										</button>
+									</form>
+									<form method="post" action="{{AppSubUrl}}/user/settings/license/{{.ID}}/delete" style="display: inline;">
+										{{$.CsrfTokenHtml}}
+										<button class="ui red button delete-button" type="submit" data-modal-id="delete-device-modal">
+											{{svg "octicon-trash"}} {{ctx.Locale.Tr "settings.license.delete"}}
+										</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					{{end}}
+				</div>
+				{{template "base/paginate" .}}
+			{{else}}
+				<div class="ui center aligned segment">
+					<p>{{ctx.Locale.Tr "settings.license.no_devices"}}</p>
+					<a class="ui primary button" href="{{AppSubUrl}}/user/settings/license/new">
+						{{svg "octicon-plus"}} {{ctx.Locale.Tr "settings.license.new"}}
+					</a>
+				</div>
+			{{end}}
+		</div>
+	</div>
+
+	<div class="ui small modal" id="delete-device-modal">
+		<div class="header">
+			{{ctx.Locale.Tr "settings.license.delete_confirm_title"}}
+		</div>
+		<div class="content">
+			<p>{{ctx.Locale.Tr "settings.license.delete_confirm_text"}}</p>
+		</div>
+		<div class="actions">
+			<div class="ui cancel button">{{ctx.Locale.Tr "settings.cancel"}}</div>
+			<div class="ui red ok button">{{ctx.Locale.Tr "settings.delete"}}</div>
+		</div>
+	</div>
+{{template "user/settings/layout_footer" .}}
