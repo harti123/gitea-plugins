@@ -12,8 +12,8 @@ on:
 
 env:
   # 镜像仓库配置
-  REGISTRY: registry.cn-hangzhou.aliyuncs.com
-  NAMESPACE: harti
+  REGISTRY: registry.cn-heyuan.aliyuncs.com
+  NAMESPACE: harti123
   IMAGE_NAME: gitea-plugins
 
 jobs:
