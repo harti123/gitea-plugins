@@ -22,11 +22,6 @@ COPY . .
 # 编译 Gitea（包含插件系统）
 RUN TAGS="bindata sqlite sqlite_unlock_notify" make build
 
-# 编译授权管理插件
-WORKDIR /go/src/license-manager-plugin
-COPY ../license-manager-plugin .
-RUN go build -buildmode=plugin -o plugin.so .
-
 # 运行阶段
 FROM alpine:3.18
 
@@ -59,7 +54,6 @@ RUN mkdir -p /app/gitea /data/gitea /data/git /data/gitea/plugins/installed
 
 # 从构建阶段复制文件
 COPY --from=builder /go/src/code.gitea.io/gitea/gitea /app/gitea/gitea
-COPY --from=builder /go/src/license-manager-plugin /data/gitea/plugins/installed/license-manager/
 
 # 设置权限
 RUN chown -R git:git /app/gitea /data
