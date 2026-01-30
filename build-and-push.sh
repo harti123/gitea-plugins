@@ -5,7 +5,7 @@
 set -e
 
 # 配置
-DOCKER_REGISTRY="registry.cn-chengdu.aliyuncs.com"
+DOCKER_REGISTRY="registry.cn-heyuan.aliyuncs.com"
 IMAGE_NAME="gitea-plugins"
 NAMESPACE="harti123"
 VERSION="1.0.0"
